@@ -13,7 +13,7 @@ test_artifact:
       - ~/test_artifact.txt
       expire_in: 1 week
 
-did_it_work:
+did_it_workk:
     stage: infrastructure
     image: ubuntu:22.10
     script:
