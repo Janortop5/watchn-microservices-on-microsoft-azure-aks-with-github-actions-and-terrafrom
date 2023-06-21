@@ -7,15 +7,31 @@ stages:
 test_artifact:
     stage: infrastructure
     script:
-        - echo "is artifact test successful?" >> /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
+        - echo "apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: 
+  name: do-fra1-capstone-connect-k8
+contexts:
+- context:
+    cluster: do-fra1-capstone-connect-k8
+    user: do-fra1-capstone-connect-k8-admin
+  name: do-fra1-capstone-connect-k8
+current-context: do-fra1-capstone-connect-k8
+kind: Config
+preferences: {}
+users:
+- name: do-fra1-capstone-connect-k8-admin
+  user:
+    token:  >> /builds/Janortop5/capstone-microservices-demo-watchn/config
     artifacts:
       paths:
-      - /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
+      - /builds/Janortop5/capstone-microservices-demo-watchn/config
       expire_in: 1 week
 
 did_it_workk:
     stage: build
     image: ubuntu:22.10
     script:
-        - cat /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
+        - cat /builds/Janortop5/capstone-microservices-demo-watchn/config
 
