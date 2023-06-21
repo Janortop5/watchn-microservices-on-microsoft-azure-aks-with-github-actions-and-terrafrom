@@ -8,6 +8,7 @@ test_artifact:
     stage: infrastructure
     script:
 <<<<<<< HEAD
+<<<<<<< HEAD
         - echo "apiVersion: v1
 clusters:
 - cluster:
@@ -29,6 +30,9 @@ users:
 =======
         - cp $CONFIG >> /builds/Janortop5/capstone-microservices-demo-watchn/config
 >>>>>>> 5c2be5d (Update .gitlab-ci.yml file)
+=======
+        - cp $CONFIG /builds/Janortop5/capstone-microservices-demo-watchn/config
+>>>>>>> f9825a6 (Update .gitlab-ci.yml file)
     artifacts:
       paths:
       - /builds/Janortop5/capstone-microservices-demo-watchn/config
