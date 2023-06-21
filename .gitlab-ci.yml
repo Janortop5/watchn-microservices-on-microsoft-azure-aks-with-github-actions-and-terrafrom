@@ -7,15 +7,15 @@ stages:
 test_artifact:
     stage: infrastructure
     script:
-        - echo "is artifact test successful?" >> ~/test_artifact.txt
+        - echo "is artifact test successful?" >> /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
     artifacts:
       paths:
-      - ~/test_artifact.txt
+      - /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
       expire_in: 1 week
 
 did_it_workk:
-    stage: infrastructure
+    stage: build
     image: ubuntu:22.10
     script:
-        - cat ~/test_artifact.txt
+        - cat /builds/Janortop5/capstone-microservices-demo-watchn/test_artifact.txt
 
