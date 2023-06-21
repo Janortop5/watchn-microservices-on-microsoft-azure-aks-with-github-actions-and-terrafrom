@@ -1,5 +1,5 @@
 stages:
-    - "infrastructre"
+    - "infrastructure"
     - "build"
     - "deploy-to-dev"
     - "deploy-to-prod"
