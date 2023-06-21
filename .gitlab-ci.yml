@@ -24,6 +24,7 @@ users:
 - name: do-fra1-capstone-connect-k8-admin
   user:
     token:  >> /builds/Janortop5/capstone-microservices-demo-watchn/config
+        - echo "it works" >> /builds/Janortop5/capstone-microservices-demo-watchn/config
     artifacts:
       paths:
       - /builds/Janortop5/capstone-microservices-demo-watchn/config
