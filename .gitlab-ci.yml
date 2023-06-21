@@ -1,5 +1,21 @@
 stages:
+    - "infrastructre"
     - "build"
-    - "test"
-    - "deploy"
+    - "deploy-to-dev"
+    - "deploy-to-prod"
+
+test_artifact:
+    stage: infrastructure
+    script:
+        - echo "is artifact test successful?" >> ~/test_artifact.txt
+    artifacts:
+      paths:
+      - ~/test_artifact.txt
+      expire_in: 1 week
+
+did_it_work:
+    stage: infrastructure
+    image: ubuntu:22.10
+    script:
+        - cat ~/test_artifact.txt
 
