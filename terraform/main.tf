@@ -27,18 +27,17 @@ resource "azurerm_kubernetes_cluster" "k8s" {
   }
 
   default_node_pool {
-    name             = "agentpool"
-    vm_size          = "standard_D2_v2"
-    node_count       = var.node_count
+    name       = "agentpool"
+    vm_size    = "Standard_D2_v2"
+    node_count = var.node_count
   }
   linux_profile {
     admin_username = var.username
-  }
 
-  ssh_key {
-    key_data = jsondecode(azapi_resource_action.ssh_public_key_gen.output).publickey
+    ssh_key {
+      key_data = jsondecode(jsonencode(azapi_resource_action.ssh_public_key_gen.output)).publicKey
+    }
   }
-
   network_profile {
     network_plugin    = "kubenet"
     load_balancer_sku = "standard"
