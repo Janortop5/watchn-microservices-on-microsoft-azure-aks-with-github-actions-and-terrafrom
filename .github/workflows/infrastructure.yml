@@ -54,6 +54,15 @@ jobs:
         - name: run terraform
           run: |
             cd terraform
+            
+            export MSYS_NO_PATHCONV=1
+
+            export ARM_SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            export ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+            export ARM_CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}"
+            export ARM_CLIENT_SECRET="${{ secrets.AZURE_CLIENT_SECRET }}"
+            export ARM_ACCESS_KEY="${{ secrets.AZURE_ACCESS_KEY }}"
+            
             export TF_VAR_ARM_SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
             export TF_VAR_ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
             export TF_VAR_ARM_CLIENT_ID="${{ secrets.AZURE_CLIENT_ID }}"
