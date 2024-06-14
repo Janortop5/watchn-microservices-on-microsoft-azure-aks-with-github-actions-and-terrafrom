@@ -75,5 +75,5 @@ jobs:
         commit-message: "Patch image tags for build ${{ steps.get_version.outputs.VERSION }}"
         title: "[Automation] Patch Image Tags"
         branch: patch-tags
-        base: master
+        base: main
         labels: automated pr
