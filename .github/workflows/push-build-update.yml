@@ -32,6 +32,14 @@ jobs:
           VERSION=${VERSION//\//-}  # Replace slashes with hyphens
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+
+      - name: Sanitize repository name
+        id: sanitize_repo
+        run: |
+          REPOSITORY=${{ secrets.REGISTRY_USER }}/watchn
+          REPOSITORY=${REPOSITORY#/}  # Remove leading slash if present
+          echo "REPOSITORY=$REPOSITORY" >> $GITHUB_ENV
+
       - name: Login to Docker registry
         uses: docker/login-action@v2
         with:
