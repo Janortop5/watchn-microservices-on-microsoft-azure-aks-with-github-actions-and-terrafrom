@@ -128,22 +128,23 @@ function build()
     source "$component_dir/scripts/build.source"
   fi
 
-  if [ "$cnb" = true ] || [ "$all" = true ]; then
-    if [ "$all" = true ]; then
-      cnb_tag="$tag-cnb"
-    else
-      cnb_tag="$tag"
-    fi
-
-    msg "Running pack build..."
-    pack $quiet_args --no-color build watchn-$component:build --builder $builder --path $component_dir --tag $repository/watchn-$component:$cnb_tag $pack_args
-
-    if [ "$push" = true ] ; then
-      msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
-
-      docker push -q $repository/watchn-$component:$cnb_tag
-    fi
+if [ "$cnb" = true ] || [ "$all" = true ]; then
+  if [ "$all" = true ]; then
+    cnb_tag="$tag-cnb"
+  else
+    cnb_tag="$tag"
   fi
+
+  msg "Running pack build..."
+  pack $quiet_args --no-color --verbose build watchn-$component:build --builder $builder --path $component_dir --tag $repository/watchn-$component:$cnb_tag $pack_args
+
+  if [ "$push" = true ] ; then
+    msg "Pushing image for ${GREEN}$component${NOFORMAT}..."
+
+    docker push -q $repository/watchn-$component:$cnb_tag
+  fi
+fi
+  
 
   if [ "$cnb" != true ] || [ "$all" = true ]; then
     if [ "$arm" = true ] || [ "$all" = true ]; then
