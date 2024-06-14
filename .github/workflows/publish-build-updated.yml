@@ -19,6 +19,7 @@ jobs:
 
       - name: Install Pack
         run: |
+          mkdir $GITHUB_WORKSPACE/bin
           wget -qO- https://github.com/buildpacks/pack/releases/download/v0.27.0/pack-v0.27.0-linux.tgz | tar -xz -C $GITHUB_WORKSPACE/bin
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
