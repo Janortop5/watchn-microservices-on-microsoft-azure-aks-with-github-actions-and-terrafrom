@@ -53,6 +53,7 @@ jobs:
         - uses: hashicorp/setup-terraform@v3 
         - name: run terraform
           run: |
+            cd terraform
             export TF_VAR_ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}
             export TF_VAR_ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
             export TF_VAR_ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}
