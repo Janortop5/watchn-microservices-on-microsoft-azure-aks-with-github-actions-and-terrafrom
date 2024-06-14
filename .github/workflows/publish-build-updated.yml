@@ -2,6 +2,7 @@ name: Publish and Patch Build
 
 on:
   push:
+    branches: [ "main" ]
     tags:
       - 'build*'
 
