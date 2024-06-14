@@ -25,13 +25,16 @@ jobs:
           wget -qO- https://github.com/buildpacks/pack/releases/download/v0.27.0/pack-v0.27.0-linux.tgz | tar -xz -C $GITHUB_WORKSPACE/bin
           echo "$GITHUB_WORKSPACE/bin" >> $GITHUB_PATH
 
-      - name: Extract version from tag
+      - name: Extract and sanitize version from ref
         id: get_version
         run: |
-          VERSION=${GITHUB_REF/refs\/tags\//}
+          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=${GITHUB_REF#refs/heads/}
+          fi
           VERSION=${VERSION//\//-}  # Replace slashes with hyphens
           echo "VERSION=$VERSION" >> $GITHUB_ENV
-
 
       - name: Sanitize repository name
         id: sanitize_repo
