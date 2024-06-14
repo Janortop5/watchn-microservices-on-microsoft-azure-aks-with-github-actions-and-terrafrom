@@ -2,7 +2,7 @@ name: Deploy watchn to AKS and use Helm
 
 on:
  push:
-   branches: ["main"]
+   # branches: ["main"]
  workflow_dispatch:
 
 # env:
