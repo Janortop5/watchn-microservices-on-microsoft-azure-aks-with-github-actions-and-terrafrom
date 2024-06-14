@@ -37,6 +37,10 @@ on:
 #          az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} .
 jobs:
       deploy:
+          permissions:
+            actions: read
+            contents: read
+            id-token: write
           runs-on: ubuntu-latest
           steps:
             - uses: actions/checkout@v4
