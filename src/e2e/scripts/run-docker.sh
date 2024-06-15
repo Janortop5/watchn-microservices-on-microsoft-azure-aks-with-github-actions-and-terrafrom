@@ -7,7 +7,7 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 
 usage() {
   cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] http_endpoint
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] [-n network] http_endpoint
 
 Runs e2e tests using Google Chrome browser.
 
@@ -23,6 +23,10 @@ EOF
 cleanup() {
   trap - SIGINT SIGTERM ERR EXIT
   # script cleanup here
+  echo "Cleaning up..."
+  if [[ -n "${network-}" && "$network" != "bridge" ]]; then
+    docker network rm "$network" || true
+  fi
 }
 
 setup_colors() {
@@ -74,7 +78,7 @@ parse_params() {
 parse_params "$@"
 setup_colors
 
-cd $script_dir/../
+cd "$script_dir/../"
 
 source ../../scripts/image-tag.sh
 
@@ -82,6 +86,13 @@ source ../../scripts/image-tag.sh
 
 #inspect=$(docker inspect --type=image watchn/watchn-e2e:$IMAGE_TAG > /dev/null && echo "OK" || echo "NOK")
 
+echo "Building Docker image..."
 docker build -t watchn/watchn-e2e:$IMAGE_TAG .
 
-docker run -i --rm --network $network -e "ENDPOINT=${args[0]}" watchn/watchn-e2e:$IMAGE_TAG
+if [[ "$network" != "bridge" ]]; then
+  echo "Creating Docker network: $network..."
+  docker network create "$network"
+fi
+
+echo "Running Docker container..."
+docker run -i --rm --network "$network" -e "ENDPOINT=${args[0]}" watchn/watchn-e2e:$IMAGE_TAG
