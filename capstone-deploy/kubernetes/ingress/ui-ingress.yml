@@ -8,7 +8,7 @@
   spec:
     ingressClassName: nginx
     rules:
-       -  host: watchn.eaaladejana.live
+       -  host: watchn.eaaladejana.xyz
           http:
             paths:
             - backend:
