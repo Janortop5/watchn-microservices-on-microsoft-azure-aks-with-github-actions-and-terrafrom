@@ -16,32 +16,42 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-        - uses: actions/checkout@v4
+        - uses: hashicorp/setup-terraform@v3 
+        - name: Run Terraform
+          id: terraform
+          run: |
+            cd terraform
+            
+            export MSYS_NO_PATHCONV=1
+  
+            export ARM_SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            export ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+            export ARM_CLIENT_ID="${{ secrets.TF_VAR_ARM_CLIENT_ID }}"
+            export ARM_CLIENT_SECRET="${{ secrets.TF_VAR_ARM_CLIENT_SECRET }}"
+            export ARM_ACCESS_KEY="${{ secrets.TF_VAR_ARM_ACCESS_KEY }}"
+            
+            export TF_VAR_ARM_SUBSCRIPTION_ID="${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+            export TF_VAR_ARM_TENANT_ID="${{ secrets.AZURE_TENANT_ID }}"
+            export TF_VAR_ARM_CLIENT_ID="${{ secrets.TF_VAR_ARM_CLIENT_ID }}"
+            export TF_VAR_ARM_CLIENT_SECRET="${{ secrets.TF_VAR_ARM_CLIENT_SECRET }}"
+            export TF_VAR_ARM_ACCESS_KEY="${{ secrets.TF_VAR_ARM_ACCESS_KEY }}"
+            
+            terraform init
+            echo "resource_group=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+            echo "cluster_name=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
+            
         - name: Azure login
           uses: azure/login@v1.4.6
           with:
                 client-id: ${{ secrets.AZURE_CLIENT_ID }}
                 tenant-id: ${{ secrets.AZURE_TENANT_ID }}
                 subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-                
-        - name: Download artifact
-          uses: actions/download-artifact@v3
-          with:
-            name: context-info
-            path: ./artifact
-  
-        - name: Read context information
-          id: read_context
-          run: |
-            source ./artifact/context-info.txt
-            echo "Resource Group: $resource_group"
-            echo "Cluster Name: $cluster_name"
-            
+                            
         - name: Use AKS context
           uses: azure/aks-set-context@v3
           with:
-            resource-group: ${{ steps.read_context.outputs.resource_group }}
-            cluster-name: ${{ steps.read_context.outputs.cluster_name }}
+            resource-group: ${{ env.resource_group }}
+            cluster-name: ${{ env.cluster_name }}
 
 
 
