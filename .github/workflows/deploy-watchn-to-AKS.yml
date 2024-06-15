@@ -58,9 +58,9 @@ jobs:
             resource-group: ${{ env.resource_group }}
             cluster-name: ${{ env.cluster_name }}
 
+        - uses: azure/setup-kubectl@v3
+          with:
+             version: 'default' # default is latest stable
+          id: install
 
 
-
-
-
-                
