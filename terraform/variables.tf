@@ -51,3 +51,13 @@ variable "ARM_NAMEDOTCOM_USERNAME" {
 variable "ARM_NAMEDOTCOM_TOKEN" {
   description = "namedotcom token"
 }
+
+variable "domain" {
+  type = map(any)
+  default = {
+    domain    = "eaaladejana.xyz"
+    record = "*.eaaladejana.xyz"
+    type      = "CNAME"
+  }
+}
+
