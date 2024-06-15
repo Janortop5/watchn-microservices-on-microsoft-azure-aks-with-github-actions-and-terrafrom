@@ -50,7 +50,7 @@ jobs:
           password: ${{ secrets.REGISTRY_PASS }}
 
       - name: Build and Push Docker Images
-        run: ./scripts/build-image.sh -r ${{ secrets.REGISTER_USER }}/watchn -t ${{ env.VERSION }} -s ${{ matrix.service }} --cnb --push
+        run: ./scripts/build-image.sh -r ${{ secrets.REGISTRY_USER }}/watchn -t ${{ env.VERSION }} -s ${{ matrix.service }} --cnb --push
 
       - name: Patch image versions in repository
         run: ./scripts/patch-image-versions.sh
