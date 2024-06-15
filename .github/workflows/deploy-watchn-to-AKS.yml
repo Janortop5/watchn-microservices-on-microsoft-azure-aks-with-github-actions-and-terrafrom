@@ -62,5 +62,56 @@ jobs:
           with:
              version: 'v1.21.0'
           id: install
+  
+        - name: Setup Helm
+          run: |
+            curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+  
+        - name: Setup Helmfile
+          run: |
+            wget https://github.com/helmfile/helmfile/releases/download/v0.154.0/helmfile_0.154.0_linux_amd64.tar.gz
+            tar xvzf helmfile_0.154.0_linux_amd64.tar.gz
+            sudo cp helmfile /usr/sbin
+            helmfile --version
+  
+        - name: Setup Helm Diff Plugin
+          run: helm plugin install https://github.com/databus23/helm-diff
+  
+        - name: Deploy Monitoring Stack
+          run: |
+            helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+            helm repo add stable https://charts.helm.sh/stable
+            helm repo add grafana https://grafana.github.io/helm-charts
+            helm repo update
+            helm
+  
+            cd /builds/Janortop5/capstone-microservices-demo-watchn/capstone-deploy/kubernetes/
+            helmfile apply
+  
+            kubectl config set-context --current --namespace default
+            helm install prometheus prometheus-community/kube-prometheus-stack
+            helm install loki grafana/loki-stack --namespace loki --create-namespace --set grafana.enabled=true --set loki.isDefault=false
+            kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+  
+            cd /path/to/your/monitoring/directory
+            kubectl apply -f assets-service-monitor.yml
+            kubectl apply -f catalog-service-monitor.yml
+            kubectl apply -f orders-service-monitor.yml
+            kubectl apply -f carts-service-monitor.yml
+            kubectl apply -f checkout-service-monitor.yml
+            kubectl apply -f prometheus-grafana-service.yml
+            kubectl apply -f prometheus-service.yml
+  
+        # - name: Apply Ingress Configuration
+        #   run: |
+        #     cd /path/to/your/ingress/directory
+        #     kubectl apply -f ui-ingress.yml
+  
+        # - name: Install Vertical Pod Autoscaler
+        #   run: |
+        #     cd /path/to/your/vpa/directory
+        #     chmod +x install-vpa.sh
+        #     ./install-vpa.sh
+        #     kubectl apply -f vpa-auto-mode.yml
 
 
