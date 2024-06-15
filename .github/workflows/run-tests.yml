@@ -21,14 +21,9 @@ jobs:
 
       - name: Build Docker image
         uses: docker/build-push-action@v3
-        with:
-          context: .
-          push: false  # Set to true if you want to push the image to a registry
-          tags: my-docker-image:latest
 
       - name: Run tests using Docker
         run: |
-          docker run --rm my-docker-image:latest /bin/bash -c "
           apk add --no-cache bash &&
           cd src/e2e &&
           chmod +x ./scripts/run-docker.sh &&
