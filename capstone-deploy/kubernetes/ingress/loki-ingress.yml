@@ -6,7 +6,7 @@
   spec:
     ingressClassName: nginx
     rules:
-       -  host: loki-grafana.eaaladejana.live
+       -  host: loki-grafana.eaaladejana.xyz
           http:
             paths:
             - backend:
