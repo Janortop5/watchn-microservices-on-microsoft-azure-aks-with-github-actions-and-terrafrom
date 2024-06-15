@@ -61,6 +61,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "Update image tags for build ${{ env.VERSION }}"
           title: "[Automation] Update Image Tags for Build ${{ env.VERSION }}"
-          base: master  # Change to 'main' if your default branch is named 'main'
+          base: main  # Change to 'main' if your default branch is named 'main'
           branch: update-image-tags-${{ env.VERSION }}
           labels: automated pr
