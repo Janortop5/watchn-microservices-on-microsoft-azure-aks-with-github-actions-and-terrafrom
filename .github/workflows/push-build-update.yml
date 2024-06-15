@@ -53,6 +53,8 @@ jobs:
         run: ./scripts/build-image.sh -r ${{ secrets.REGISTRY_USER }} -t ${{ env.VERSION }} -s ${{ matrix.service }} --cnb --push
 
       - name: Patch image versions in repository
+        env:
+          TAG: ${{ env.VERSION }} 
         run: ./scripts/patch-image-versions.sh
 
       - name: Create or update Pull Request
