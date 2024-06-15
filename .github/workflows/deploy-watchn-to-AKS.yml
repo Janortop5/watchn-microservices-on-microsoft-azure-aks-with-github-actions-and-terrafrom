@@ -83,7 +83,6 @@ jobs:
             helm repo add stable https://charts.helm.sh/stable
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
-            helm
   
             cd /builds/Janortop5/capstone-microservices-demo-watchn/capstone-deploy/kubernetes/
             helmfile apply
