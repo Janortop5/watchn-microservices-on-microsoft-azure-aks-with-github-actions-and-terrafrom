@@ -19,9 +19,6 @@ jobs:
           username: ${{ secrets.REGISTRY_USER }}
           password: ${{ secrets.REGISTRY_PASS }}
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v3
-
       - name: Run tests using Docker
         run: |
           apk add --no-cache bash &&
