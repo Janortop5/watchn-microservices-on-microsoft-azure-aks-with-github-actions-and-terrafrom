@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-  - host: prometheus-grafana.eaaladejana.live
+  - host: prometheus-grafana.eaaladejana.xyz
     http:
       paths:
       - path: /
