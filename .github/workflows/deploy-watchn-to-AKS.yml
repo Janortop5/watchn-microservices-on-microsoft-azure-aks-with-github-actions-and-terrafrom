@@ -73,7 +73,7 @@ jobs:
             tar xvzf helmfile_0.154.0_linux_amd64.tar.gz
             sudo cp helmfile /usr/sbin
             helmfile --version
-  
+
         - name: Setup Helm Diff Plugin
           run: helm plugin install https://github.com/databus23/helm-diff
   
@@ -84,7 +84,7 @@ jobs:
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
   
-            cd capstone-deploy/kubernetes/
+            cd deploy/kubernetes/
             helmfile apply
   
             kubectl config set-context --current --namespace default
