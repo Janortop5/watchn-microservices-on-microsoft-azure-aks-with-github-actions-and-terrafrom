@@ -18,5 +18,7 @@ jobs:
 
       - name: Run tests using Docker
         run: |
-          cd src/e2e &&
-          chmod +x ./scripts/run-docker.sh &&
+          cd src/e2e
+          chmod +x ./scripts/run-docker.sh
+          ./scripts/run-docker.sh 'http://endpoint:8080'
+
