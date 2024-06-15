@@ -1,9 +1,9 @@
-name: Build and Test Docker Image
+name: Run tests
 
 on: [push, pull_request]
 
 jobs:
-  build-and-test:
+  run-tests:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,7 +21,6 @@ jobs:
 
       - name: Run tests using Docker
         run: |
-          apk add --no-cache bash &&
           cd src/e2e &&
           chmod +x ./scripts/run-docker.sh &&
           ./scripts/run-docker.sh 'http://endpoint:8080'
