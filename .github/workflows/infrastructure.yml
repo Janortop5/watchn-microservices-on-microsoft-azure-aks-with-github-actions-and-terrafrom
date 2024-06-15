@@ -1,7 +1,6 @@
 name: Setup AKS with Terraform
 
 on:
- push:
  workflow_dispatch:
 
 # env:
