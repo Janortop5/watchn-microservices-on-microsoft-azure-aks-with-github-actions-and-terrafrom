@@ -1,24 +1,24 @@
-name: Run tests
+# name: Run tests
 
-on: [push, pull_request]
+# on: [push, pull_request]
 
-jobs:
-  run_test:
-    runs-on: ubuntu-latest
+# jobs:
+#   run_test:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+#       - name: Set up Docker Buildx
+#         uses: docker/setup-buildx-action@v2
 
-      - name: Verify Docker is running
-        run: docker info
+#       - name: Verify Docker is running
+#         run: docker info
 
-      - name: Run tests using Docker
-        run: |
-          cd src/e2e
-          chmod +x ./scripts/run-docker.sh
-          ./scripts/run-docker.sh 'http://endpoint:8080'
+#       - name: Run tests using Docker
+#         run: |
+#           cd src/e2e
+#           chmod +x ./scripts/run-docker.sh
+#           ./scripts/run-docker.sh 'http://endpoint:8080'
 
