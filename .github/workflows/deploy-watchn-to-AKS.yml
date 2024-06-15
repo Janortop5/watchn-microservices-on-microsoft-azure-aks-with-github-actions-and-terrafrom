@@ -40,6 +40,9 @@ jobs:
             export TF_VAR_ARM_CLIENT_ID="${{ secrets.TF_VAR_ARM_CLIENT_ID }}"
             export TF_VAR_ARM_CLIENT_SECRET="${{ secrets.TF_VAR_ARM_CLIENT_SECRET }}"
             export TF_VAR_ARM_ACCESS_KEY="${{ secrets.TF_VAR_ARM_ACCESS_KEY }}"
+
+            export TF_VAR_NAMEDOTCOM_USERNAME="${{ secrets.TF_VAR_NAMEDOTCOM_USERNAME }}"
+            export TF_VAR_NAMEDOTCOM_TOKEN="${{ secrets.TF_VAR_NAMEDOTCOM_TOKEN }}"
             
             terraform init
             echo "resource_group=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
@@ -92,7 +95,7 @@ jobs:
             helm install loki grafana/loki-stack --namespace loki --create-namespace --set grafana.enabled=true --set loki.isDefault=false
             kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
   
-            cd capstone-deploy/kubernetes/monitoring
+            cd ../../capstone-deploy/kubernetes/monitoring
             kubectl apply -f assets-service-monitor.yml
             kubectl apply -f catalog-service-monitor.yml
             kubectl apply -f orders-service-monitor.yml
