@@ -31,6 +31,11 @@ terraform {
   }
 }
 
+provider "namedotcom" {
+  username = var.NAMEDOTCOM_USERNAME
+  token    = var.NAMEDOTCOM_TOKEN
+}
+
 provider "azurerm" {
     features {}
 
@@ -42,4 +47,33 @@ provider "azurerm" {
     tenant_id       = var.ARM_TENANT_ID
     client_id       = var.ARM_CLIENT_ID
     client_secret   = var.ARM_CLIENT_SECRET
+}
+
+# Data source for AKS cluster
+data "azurerm_kubernetes_cluster" "aks_cluster" {
+  name                = azurerm_kubernetes_cluster.k8s.name
+  resource_group_name = azurerm_resource_group.rg.name
+  depends_on = [
+    azurerm_kubernetes_cluster.k8s
+  ]
+}
+
+# Helm provider configuration
+provider "helm" {
+  kubernetes {
+    host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].host
+    client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_certificate)
+    client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_key)
+    cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].cluster_ca_certificate)
+  }
+  alias           = "aks"
+}
+
+# Kubernetes provider configuration
+provider "kubernetes" {
+  host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].cluster_ca_certificate)
+  alias           = "aks"
 }
