@@ -16,6 +16,9 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
+        - name: Check out code
+          uses: actions/checkout@v3
+          
         - uses: hashicorp/setup-terraform@v3 
         - name: Run Terraform
           id: terraform
