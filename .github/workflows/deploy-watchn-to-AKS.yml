@@ -101,16 +101,16 @@ jobs:
             kubectl apply -f prometheus-grafana-service.yml
             kubectl apply -f prometheus-service.yml
   
-        # - name: Apply Ingress Configuration
-        #   run: |
-        #     cd /path/to/your/ingress/directory
-        #     kubectl apply -f ui-ingress.yml
+        - name: Apply Ingress Configuration
+          run: |
+            cd capstone-deploy/kubernetes/ingress
+            kubectl apply -f ui-ingress.yml
   
-        # - name: Install Vertical Pod Autoscaler
-        #   run: |
-        #     cd /path/to/your/vpa/directory
-        #     chmod +x install-vpa.sh
-        #     ./install-vpa.sh
-        #     kubectl apply -f vpa-auto-mode.yml
+        - name: Install Vertical Pod Autoscaler
+          run: |
+            cd capstone-deploy/kubernetes
+            chmod +x install-vpa.sh
+            ./install-vpa.sh
+            kubectl apply -f vpa-auto-mode.yml
 
 
