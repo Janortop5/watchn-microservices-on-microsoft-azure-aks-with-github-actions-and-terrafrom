@@ -2,7 +2,7 @@ name: Setup AKS with Terraform
 
 on:
  push:
-   branches: ["main"]
+   # branches: ["main"]
  workflow_dispatch:
 
 # env:
