@@ -68,6 +68,11 @@ jobs:
             export TF_VAR_ARM_CLIENT_ID="${{ secrets.TF_VAR_ARM_CLIENT_ID }}"
             export TF_VAR_ARM_CLIENT_SECRET="${{ secrets.TF_VAR_ARM_CLIENT_SECRET }}"
             export TF_VAR_ARM_ACCESS_KEY="${{ secrets.TF_VAR_ARM_ACCESS_KEY }}"
+
+            
+            export TF_VAR_NAMEDOTCOM_USERNAME="${{ secrets.TF_VAR_NAMEDOTCOM_USERNAME }}"
+            export TF_VAR_NAMEDOTCOM_TOKEN="${{ secrets.TF_VAR_NAMEDOTCOM_TOKEN }}"
+            
             terraform init
             terraform apply --auto-approve
 
