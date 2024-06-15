@@ -21,6 +21,10 @@ terraform {
       source  = "hashicorp/time"
       version = "~>0.9.1"
     }
+    namedotcom = {
+      source  = "lexfrei/namedotcom"
+      version = "1.2.5"
+    }        
   }
 
     backend "azurerm" {
@@ -61,19 +65,19 @@ data "azurerm_kubernetes_cluster" "aks_cluster" {
 # Helm provider configuration
 provider "helm" {
   kubernetes {
-    host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].host
-    client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_certificate)
-    client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_key)
-    cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].cluster_ca_certificate)
+    host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].host
+    client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_certificate)
+    client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_key)
+    cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].cluster_ca_certificate)
   }
   alias           = "aks"
 }
 
 # Kubernetes provider configuration
 provider "kubernetes" {
-  host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].host
-  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_certificate)
-  client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].client_key)
-  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config.[0].cluster_ca_certificate)
+  host                   = data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].host
+  client_certificate     = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_certificate)
+  client_key             = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].client_key)
+  cluster_ca_certificate = base64decode(data.azurerm_kubernetes_cluster.aks_cluster.kube_config[0].cluster_ca_certificate)
   alias           = "aks"
 }

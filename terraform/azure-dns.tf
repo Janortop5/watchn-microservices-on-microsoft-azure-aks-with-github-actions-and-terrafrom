@@ -10,7 +10,7 @@ data "kubernetes_service" "ingress_service" {
   }
 
   depends_on = [
-    helm_release.nginx_ingress_controller
+     helm_release.nginx_ingress_controller
   ]
 
   provider = kubernetes.aks
@@ -25,12 +25,17 @@ resource "azurerm_dns_cname_record" "dns_record" {
   record              = data.kubernetes_service.ingress_service.status.0.load_balancer.0.ingress.0.ip
 }
 
+locals {
+  dns_name_servers = tolist(azurerm_dns_zone.dns_zone.name_servers)
+}
+
 resource "namedotcom_domain_nameservers" "eaaladejana_xyz" {
-  domain_name = eaaladejana.xyz
+  domain_name = "eaaladejana.xyz"
   nameservers = [
-    "azurerm_dns_zone.dns_zone.name_servers[0]",
-    "azurerm_dns_zone.dns_zone.name_servers[1]",
-    "azurerm_dns_zone.dns_zone.name_servers[2]",
-    "azurerm_dns_zone.dns_zone.name_servers[3]",
+    "${substr(local.dns_name_servers[0], 0, length(local.dns_name_servers[0]) - 1)}",
+    "${substr(local.dns_name_servers[1], 0, length(local.dns_name_servers[1]) - 1)}",
+    "${substr(local.dns_name_servers[2], 0, length(local.dns_name_servers[2]) - 1)}",
+    "${substr(local.dns_name_servers[3], 0, length(local.dns_name_servers[3]) - 1)}",
   ]
 }
+
