@@ -89,10 +89,10 @@ jobs:
   
             cd deploy/kubernetes/
             helmfile apply
-  
+
             kubectl config set-context --current --namespace default
-            helm install prometheus prometheus-community/kube-prometheus-stack
-            helm install loki grafana/loki-stack --namespace loki --create-namespace --set grafana.enabled=true --set loki.isDefault=false
+            helm install prometheus prometheus-community/kube-prometheus-stack --replace
+            helm install loki grafana/loki-stack --namespace loki --create-namespace --set grafana.enabled=true --set loki.isDefault=false --replace
             kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
   
             cd ../../capstone-deploy/kubernetes/monitoring
