@@ -1,8 +1,8 @@
-name: Deploy watchn to AKS and use Helm
+name: Setup AKS with Terraform
 
 on:
- # push:
-   # branches: ["main"]
+ push:
+   branches: ["main"]
  workflow_dispatch:
 
 # env:
