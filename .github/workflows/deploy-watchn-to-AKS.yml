@@ -1,0 +1,51 @@
+name: Deploy to AKS
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Publish and Patch Build"]
+    types:
+      - completed
+
+jobs:
+  deploy_to_aks:
+    name: Deploy watchn to AKS
+    permissions:
+      actions: read
+      contents: read
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/checkout@v4
+        - name: Azure login
+          uses: azure/login@v1.4.6
+          with:
+                client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+                
+        - name: Download artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: context-info
+            path: ./artifact
+  
+        - name: Read context information
+          id: read_context
+          run: |
+            source ./artifact/context-info.txt
+            echo "Resource Group: $resource_group"
+            echo "Cluster Name: $cluster_name"
+            
+        - name: Use AKS context
+          uses: azure/aks-set-context@v3
+          with:
+            resource-group: ${{ steps.read_context.outputs.resource_group }}
+            cluster-name: ${{ steps.read_context.outputs.cluster_name }}
+
+
+
+
+
+
+                
