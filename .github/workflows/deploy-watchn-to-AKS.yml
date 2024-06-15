@@ -84,7 +84,7 @@ jobs:
             helm repo add grafana https://grafana.github.io/helm-charts
             helm repo update
   
-            cd /builds/Janortop5/capstone-microservices-demo-watchn/capstone-deploy/kubernetes/
+            cd capstone-deploy/kubernetes/
             helmfile apply
   
             kubectl config set-context --current --namespace default
