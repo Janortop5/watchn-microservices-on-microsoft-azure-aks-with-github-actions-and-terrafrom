@@ -24,4 +24,4 @@ jobs:
           apk add --no-cache bash &&
           cd src/e2e &&
           chmod +x ./scripts/run-docker.sh &&
-          ./scripts/run-docker.sh 'http://endpoint:8080'"
+          ./scripts/run-docker.sh 'http://endpoint:8080'
