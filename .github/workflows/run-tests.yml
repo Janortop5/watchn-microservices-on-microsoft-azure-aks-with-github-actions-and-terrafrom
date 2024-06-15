@@ -15,19 +15,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl jq
 
-      - name: Wait for the web service to be available
-        run: |
-          echo "Waiting for the web service to be available..."
-          for i in {1..10}; do
-            if curl -k --silent --fail https://endpont:8080; then
-              echo "Web service is up!"
-              break
-            else
-              echo "Waiting for the web service to be up..."
-              sleep 10
-            fi
-          done
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
