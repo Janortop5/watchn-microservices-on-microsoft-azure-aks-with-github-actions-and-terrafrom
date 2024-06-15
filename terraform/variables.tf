@@ -43,3 +43,11 @@ variable "ARM_CLIENT_ID" {
 variable "ARM_CLIENT_SECRET" {
   description = "Azure Client Secret"
 }
+
+variable "ARM_NAMEDOTCOM_USERNAME" {
+  description = "namedotcom username"
+}
+
+variable "ARM_NAMEDOTCOM_TOKEN" {
+  description = "namedotcom token"
+}
