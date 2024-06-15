@@ -3,47 +3,18 @@ name: Run tests
 on: [push, pull_request]
 
 jobs:
-  run-tests:
+  run_test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
-        
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y curl jq
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.REGISTRY_USER }}
-          password: ${{ secrets.REGISTRY_PASS }}
-
-      - name: Run tests using Docker
-        run: |
-          cd src/e2e &&
-          chmod +x ./scripts/run-docker.sh &&
-          ./scripts/run-docker.sh 'http://localhost:8080'
-          SERVICE_PID=$!
-          echo "SERVICE_PID=$SERVICE_PID" >> $GITHUB_ENV
-
-      - name: Wait for the web service to be available
-        run: |
-          echo "Waiting for the web service to be available..."
-          for i in {1..10}; do
-            if curl -k --silent --fail https://endpont:8080; then
-              echo "Web service is up!"
-              break
-            else
-              echo "Waiting for the web service to be up..."
-              sleep 10
-            fi
-          done
+      - name: Verify Docker is running
+        run: docker info
 
       - name: Run tests using Docker
         run: |
