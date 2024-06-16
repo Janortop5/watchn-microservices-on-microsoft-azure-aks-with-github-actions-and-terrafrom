@@ -93,6 +93,7 @@ jobs:
             kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
             
             cd ../../capstone-deploy/kubernetes/monitoring
+            helm install prometheus prometheus-community/kube-prometheus-stack
             kubectl apply -f assets-service-monitor.yml
             kubectl apply -f catalog-service-monitor.yml
             kubectl apply -f orders-service-monitor.yml
