@@ -4,94 +4,72 @@
 Link to Application repo: https://github.com/niallthomson/microservices-demo
 
 ### prerequisites for project
-- aws account
-- iam user with administrator access
-- domain
+- A Microsoft Azure Account with a valid subscription (preferable 'basic' at minimum)
+- namedotcom domain
 - dockerhub account
-- gitlab account
+- github actions
 
 ### prerequisites for pipeline
-- remote backend for terraform state — a sample file to create s3 backend available in ./capstone-deploy/terraform/remote.tf
+- remote backend for terraform state — terraform configuration for Azure blob storage remote backend in terraform-azure/remote
 - namedotcom token
-- create the following variables in gitlab:
+- create the following Repository secrets in repository settings under 'Secrets and Variables/Actions':
 ```
-AWS_ACCESS_KEY_ID   [variable.type: env_var]
-AWS_CREDENTIALS     [variable.type: env_var]
-AWS_DEFAULT_REGION  [variable.type: env_var]
-REGISTRY_PASS       [variable.type: env_var]
-REGISTRY_USER       [variable.type: env_var]
+- ACTIONS_PAT
+- AZURE_CLIENT_ID
+- AZURE_SUBSCRIPTION_ID
+- AZURE_TENANT_ID
+- REGISTRY_PASS
+- REGISTRY_USER
+- TF_VAR_ARM_ACCESS_KEY
+- TF_VAR_ARM_CLIENT_ID
+- TF_VAR_ARM_CLIENT_SECRET
+- TF_VAR_NAMEDOTCOM_TOKEN
+- TF_VAR_NAMEDOTCOM_USERNAME
 ```
-![gitlab variables](./capstone-deploy/screenshots/gitlab-variables.png)
+![github actions secrets](./capstone-deploy/screenshots/github-actions-secret.png)
 
 ## Breakdown
-#### stage: infrastructure
-- uses **'ubuntu:focal'** image as base image
-- installs the necessary dependencies and binary/executable files (terraform, aws-cli, helm) to connect to aws and run terraform configuration
-- takes in the following variables in the 'before_script': **AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_DEFAULT_REGION**
-- script argument runs terraform configuration
-- creates **artifacts**
-#### stage: test
-- uses **'docker:23.0.1-cli'** image and it's **'docker:23.0.1-dind'** service 
-- takes in variable: **DOCKER_TLS_CERTDIR: "/certs"**
-- has a before_script argument to install bash
-- 'script' runs the test script
-#### stage: build
-- uses **'docker:23.0.1-cli'** image and it's **'docker:23.0.1-dind'** service 
-- takes in variable: **DOCKER_TLS_CERTDIR: "/certs"**
-- has a 'before_script' to login to dockerhub
-- has 'script' that builds and pushes images to dockerhub
-#### stage: deploy-to-staging
-- uses **'dtzar/helm-kubectl:latest'** image to connect to cluster and use helm
-- has **'if: $CI_COMMIT_REF_NAME != $CI_DEFAULT_BRANCH'** rule which makes 'deploy-to-staging' job to only run from staging branch
-- has a 'before_script' which installs **aws-iam-authenticator, helmfile and helm-diff plugin** on job container
-- has 'script' which deploys to staging environment
-#### stage: deploy-to-producuction
-- uses **'dtzar/helm-kubectl:latest'** image to connect to cluster and use helm
-- has **'if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH'** rule which makes 'deploy-to-producuction' job to only run from master branch
-- has a 'before_script' which installs aws-iam-authenticator, helmfile and helm-diff plugin on job container
-- has 'script' which deploys to production environment
+#### Workflow: infrastructure.yml (Setup AKS with Terraform)
+- uses ubuntu-latest github actions runner
+- job **deploy**: uses 'actions/checkout@v4', 'hashicorp/setup-terraform@v3', 'actions/upload-artifact@v3'
+- creates **aks cluster** with **terraform configuration**
+- contains **terraform command** to **destroy resources** and **remove from state**
+- creates and uploads **artifacts**
+#### Workflow: push-build_update.yml (Publish and Patch Build)
+- uses ubuntu-latest github actions runner
+- job **build_and_patch**, **Create or Update Pull Request**
+- builds services and push to dockerhub account
+- create pull request
+#### Workflow: **deploy-to-aks.yml' (Deploy to AKS)
+- uses ubuntu-latest github actions runner
+- job **deploy_to_aks**
+- uses **actions/checkout@v3** **docker/login-action@v2** **peter-evans/create-pull-request@v4**
+- initializes terraform to get terraform outputs
+- logs in to Azure, sets up AKS context, Kubectl, Helm, Helmfile, Helm Diff Plugin, Helm repository
+- apply all manifests
 ## What pipeline does
-#### stage 'infrastructure':
-- contains the **infrastructure job**
+#### ACTIONS PAGE
+![infrastructure job](./capstone-deploy/screenshots/actions-page.png)
+#### Workflow 'Setup AKS with Terraform'
 - **deploys** and **sets up cluster** with terraform
-- creates **artifacts** for **credentials** to **connect** to cluster in later jobs
-- contains the **get_cluster_credentials job** which is to only get the **cluster credentials** from terraform **after cluster** has been **created** 
-![infrastructure job](./capstone-deploy/screenshots/infrastructure-job.png)
-![get_cluster_credentials job](./capstone-deploy/screenshots/get-cluster-credentials-job.png)
+![set up aks with terraform job](./capstone-deploy/screenshots/setup-aks-with-terraform.png)
 
-
-#### stage 'test':
-- contains the **"run_tests"** job
-- it **builds** the **images** for the source codes **and tests** the **application** before the build stage (the tests provided by the developers for the application failed, hence why it was skipped in the pipeline)
-![run_tests job](./capstone-deploy/screenshots/run_tests-job.png)
-
-#### stage 'build':
-- contains the **"build_images"** job
+#### Workflow 'Publish and Patch Build'
 - **builds** the **images** for the **various microservices** (ui, catalog, carts, orders, checkout, assets, activemq) and pushes to dockerhub account
-![build job](./capstone-deploy/screenshots/build-images-job.png)
+![publish and patch job](./capstone-deploy/screenshots/publish-and-patch-build.png)
 
-#### stage 'deploy-to-staging':
-- contains the **"deploy-to-staging" job**
-- deploys **watchn, prometheus** and **loki to staging** environment cluster before production
-![deploy-to-staging job](./capstone-deploy/screenshots/deploy-to-staging-job.png)
-
-#### stage 'deploy-to-production':
-- contains the **"deploy-to-producuction"** job
-- deploys **watchn, prometheus** and **loki to production**
-![deploy-to-producuction job](./capstone-deploy/screenshots/deploy-to-producuction-job.png)
-
-#### Pipeline Architecture Diagram
-![pipeline architecture diagram](./capstone-deploy/screenshots/Capstone-CICD-Pipeline-architecture-diagram.png)
-
+#### Workflow 'Deploy to AKS'
+- deploys **watchn, prometheus** and **loki** on **AKS Cluster**
+![deploy to aks job](./capstone-deploy/screenshots/deploy-to-aks.png)
+### Pipeline Diagram
+![pipeline Diagram](./capstone-deploy/screenshots/cicd-gitops-github-actions-aks-push.png)
 ## Infrastructure
-#### ./capstone-deploy/terraform
-- creates **2 eks cluster** and **2 eks node group,** one for **staging** and one for **production,** in private subnets with only 443 ingress rule
-- sets **remote backend** as s3 bucket
-- creates **hosted zone**
-- creates **nginx-ingress-controller** for both kubernetes clusters and calls it's Load Balancer data back into configuration to attach to a **wildcard hosted zone record**
-- adds hosted zone **nameservers** to namedotcom domain using terraform **namedotcom provider**
-#### Infrastructure Architecture Diagram
-![pipeline architecture diagram](./capstone-deploy/screenshots/Capstone-aws-architecture-diagram.png)
+#### ./capstone-deploy/terraform-azure
+- creates aks cluster
+- sets **remote backend** as azure blob storage
+- creates **azure dns record**
+- creates **nginx-ingress-controller** for aks clusters
+![azure architecture diagram](./capstone-deploy/screenshots/aks-reference-architecture-Architecture.png)
 ## configuration
 #### ./deploy/kubernetes
 - deploys **watchn** application using **helmfile, helm charts** and **helm-diff plugin**
@@ -114,32 +92,27 @@ prometheus-grafana-service.yml -
 - **'vpa-auto-mode.yml'** - configuration to set 'updateMode: auto' for VPA
 ## Steps to recreate
 - get a **namedotcom** domain and create an api token
-- get an **aws account** and create an **IAM user **with **enough permissions** preferable administratoraccess
-- get a **dockerhub account** with its **username** and **password** as **"REGISTRY_USER"** and **"REGISTRY_PASS"** variables respectfully created in **Settings > CICD > Variables** 
-- isolate **'./capstone-deploy/terraform/remote.tf'** along with **'./capstone-deploy/terraform/providers.tf'** and **'./capstone-deploy/terraform/variables.tf'** from the rest of the terraform configuration
-- create a remote backend using the **'./capstone-deploy/terraform/remote.tf'** configuration (delete the terraform state after if the separated terraform configurations are returned to the same directory)
-- import repo to gitlab as a **CICD project**
-- create all the variables listed above in "prerequisites for pipeline" section
-- replace the **domain name,** and **namedotcom username** and **token** in the **"./capstone-deploy/terraform/variables.tf"** file
-- run pipeline
+- get an **azure account** with at minimum a **basic** subscription
+- get a **dockerhub account** with its **username** and **password** as **"REGISTRY_USER"** and **"REGISTRY_PASS"** stored as github secrets 
+- create a remote backend using **terraform/remote/**
+- uncomment needed commands
+- run pipeline with push or workflow dispatch
 ## Security
-- hid sensitive keys and credentials using gitlab variables
-- set dev branch pipeline to deploy only to staging environment
-- merge request from dev branch to master branch needs approval from project owner
-- pipeline to production only runs from master branch
+- hid sensitive credentials using github secrets
+- Actions PAT for GitHub pull requests permission
+- 'main' branch protection
 - set appropriate permissions for the different users according to their role
-- clusters in private subnets with only 443 ingress rule
 ## Autoscaling
 - making use of **Vertical Pod Autoscaler (VPA)** to scale kubernetes cluster according to historical resource usage measurements
 - Adds more CPU and Memory to pods by adjusting the resource requests and limits for pods
 ## Watchn app ui
-![Watchn app ui](./capstone-deploy/screenshots/watchn-app-ui.png)
+![Watchn app ui](./capstone-deploy/screenshots/watchneaaladejanaxyz.png)
 ## prometheus monitoring and metrics
-![prometheus grafana screenshot 1](./capstone-deploy/screenshots/prometheus-grafana-1.png)
-![prometheus grafana screenshot 2](./capstone-deploy/screenshots/prometheus-grafana-2.png)
-![prometheus grafana screenshot 3](./capstone-deploy/screenshots/prometheus-grafana-3.png)
+![prometheus grafana screenshot 1](./capstone-deploy/screenshots/prometheus-grafanaeaaladejanaxyz1.png)
+![prometheus grafana screenshot 2](./capstone-deploy/screenshots/prometheus-grafanaeaaladejanaxyz2.png)
+![prometheus grafana screenshot 3](./capstone-deploy/screenshots/prometheus-grafanaeaaladejanaxyz3.png)
 ## loki logging
-![loki logging ui - watchn namespace](./capstone-deploy/screenshots/loki-logging-watchn.png)
+![loki logging ui - watchn namespace](./capstone-deploy/screenshots/loki-grafanaeaaladejanaxyz.png)
 
 
 
