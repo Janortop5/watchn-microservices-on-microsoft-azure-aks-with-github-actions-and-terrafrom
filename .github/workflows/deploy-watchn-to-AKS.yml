@@ -23,7 +23,7 @@ jobs:
         - name: Run Terraform
           id: terraform
           run: |
-            cd terraform
+            cd terraform-azure
             
             export MSYS_NO_PATHCONV=1
   
