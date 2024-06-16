@@ -2,6 +2,8 @@ name: Setup AKS with Terraform
 
 on:
  workflow_dispatch:
+ push:
+   branches: [ "main" ]
 
 # env:
 #  CONTAINER_REGISTRY: "your-azure-container-registry"
@@ -72,19 +74,22 @@ jobs:
             export TF_VAR_NAMEDOTCOM_TOKEN="${{ secrets.TF_VAR_NAMEDOTCOM_TOKEN }}"
             
             terraform init
-            terraform apply --auto-approve
+            # terraform apply --auto-approve
 
-            echo "resource_group=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
-            echo "cluster_name=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
+            # echo "resource_group=$(terraform output -raw resource_group_name)" >> $GITHUB_ENV
+            # echo "cluster_name=$(terraform output -raw kubernetes_cluster_name)" >> $GITHUB_ENV
 
-        - name: Save context information as artifact
-          run: |
-            echo "resource_group=${{ env.resource_group }}" > context-info.txt
-            echo "cluster_name=${{ env.cluster_name }}" >> context-info.txt
-          shell: bash
+            # terraform state rm helm_release.nginx_ingress_controller
+            # terraform destroy --auto-approve
+
+        # - name: Save context information as artifact
+        #   run: |
+        #     echo "resource_group=${{ env.resource_group }}" > context-info.txt
+        #     echo "cluster_name=${{ env.cluster_name }}" >> context-info.txt
+        #   shell: bash
   
-        - name: Upload artifact
-          uses: actions/upload-artifact@v3
-          with:
-            name: context-info
-            path: context-info.txt
+        # - name: Upload artifact
+        #   uses: actions/upload-artifact@v3
+        #   with:
+        #     name: context-info
+        #     path: context-info.txt
