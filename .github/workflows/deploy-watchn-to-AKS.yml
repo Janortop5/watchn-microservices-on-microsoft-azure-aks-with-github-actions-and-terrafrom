@@ -2,8 +2,6 @@ name: Deploy to AKS
 
 on:
   workflow_dispatch:
-  push: 
-    branches: [ "main" ]
   workflow_run:
     workflows: ["Publish and Patch Build"]
     types:
@@ -91,8 +89,9 @@ jobs:
             helmfile apply
 
             kubectl config set-context --current --namespace default
+            helm install loki grafana/loki-stack --namespace loki --create-namespace --set grafana.enabled=true --set loki.isDefault=false
             kubectl get secret --namespace loki loki-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
-  
+            
             cd ../../capstone-deploy/kubernetes/monitoring
             kubectl apply -f assets-service-monitor.yml
             kubectl apply -f catalog-service-monitor.yml
@@ -101,11 +100,17 @@ jobs:
             kubectl apply -f checkout-service-monitor.yml
             kubectl apply -f prometheus-grafana-service.yml
             kubectl apply -f prometheus-service.yml
+            
+            cd ../
+            kubectl apply -f loki-service.yml
+            kubectl apply -f ui-service.yml
   
         - name: Apply Ingress Configuration
           run: |
             cd capstone-deploy/kubernetes/ingress
             kubectl apply -f ui-ingress.yml
+            kubectl apply -f loki-ingress.yml
+            kubectl apply -f prometheus-grafana-ingress.yml
   
         - name: Install Vertical Pod Autoscaler
           run: |
